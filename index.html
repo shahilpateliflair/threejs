@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      #container {
+        justify-content: center;
+        display: block;
+        width: 200px;
+        height: 200px;
+        justify-items: center;
+        height: 100px;
+        display: flex;
+        touch-action: none;
+        margin-left: 247px;
+        margin-top: 50px;
+      }
+      #controls {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+        display: none !important;
+      }
+      .color-picker {
+        margin: 10px 0;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      #container {
+        justify-content: center;
+        display: block;
+        justify-items: center;
+        width: 400px;
+        height: 400px;
+        display: flex;
+        touch-action: none;
+        /* margin-left: 247px;
+        margin-top: 200px; */
+      }
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        display: none;
+      }
+      canvas {
+        width: 400px !important;
+        height: 400px !important;
+        margin-left: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="controls">
+        <h2>Cap Customizer</h2>
+
+        <div class="color-picker">
+          <label for="mainColor">Main Cap Color:</label>
+          <input type="color" id="mainColor" value="" />
+        </div>
+
+        <div class="color-picker">
+          <label for="billColor">Bill/Visor Color:</label>
+          <input type="color" id="billColor" value="" />
+        </div>
+
+        <div class="color-picker">
+          <label for="buttonColor">Button Color:</label>
+          <input type="color" id="buttonColor" value="" />
+        </div>
+
+        <div class="color-picker">
+          <label for="logoColor">Logo Color:</label>
+          <input type="color" id="logoColor" value="" />
+        </div>
+      </div>
+
+      <div id="loading">Loading 3D model...</div>
+    </div>
+    <button id="loadOtherModel" style="position:absolute; top:10px; right:10px; z-index: 200;">
+      Load Another Model
+    </button>
+    <!-- Import Three.js and necessary addons -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/DRACOLoader.js"></script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
