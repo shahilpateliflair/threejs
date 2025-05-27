@@ -156,7 +156,7 @@ function loadSecondModel() {
 
   const loader = new THREE.GLTFLoader();
   loader.load(
-    "models/tshirt (1).glb",
+    "models/wagner_barash.glb",
     (gltf) => {
       secondModel = gltf.scene;
       normalizeModel(secondModel);
