@@ -71,7 +71,7 @@ function init() {
 
   // Load the 3D model using GLTFLoader
   new THREE.GLTFLoader().load(
-    "models/spy-hypersport.glb",
+    "models/polo_white_tshirt.glb",
     (gltf) => {
       capModel = gltf.scene;
       normalizeModel(capModel); // Scale and center the model
@@ -203,7 +203,28 @@ function updateAllColors() {
     if (child.isMesh) {
       for (const part in partNames) {
         if (child.name.includes(partNames[part])) {
+          // Only update the color, keep all other material properties
           child.material.color.set(colors[part]);
+          
+          // If you want to use vertex coloring for the main parts:
+          if (part === 'main') {
+            const geometry = child.geometry;
+            if (geometry.isBufferGeometry && !geometry.attributes.color) {
+              geometry.setAttribute(
+                "color",
+                new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.count * 3), 3)
+              );
+              const colorsArray = geometry.attributes.color.array;
+              const baseColor = new THREE.Color(colors[part]);
+              for (let i = 0; i < geometry.attributes.position.count; i++) {
+                colorsArray[i * 3] = baseColor.r;
+                colorsArray[i * 3 + 1] = baseColor.g;
+                colorsArray[i * 3 + 2] = baseColor.b;
+              }
+              geometry.attributes.color.needsUpdate = true;
+              child.material.vertexColors = true;
+            }
+          }
         }
       }
     }
@@ -256,14 +277,12 @@ function onClick(event) {
  * @param {number} y - Screen Y coordinate
  */
 function showFloatingColorPicker(x, y) {
-  removeFloatingColorPicker(); // Remove existing picker if any
+  removeFloatingColorPicker();
 
-  // Create color input element
   floatingColorPicker = document.createElement("input");
   floatingColorPicker.type = "color";
   floatingColorPicker.value = "#" + selectedMesh.material.color.getHexString();
 
-  // Position picker near mouse cursor
   Object.assign(floatingColorPicker.style, {
     position: "fixed",
     left: x + 10 + "px",
@@ -271,56 +290,44 @@ function showFloatingColorPicker(x, y) {
     zIndex: 1000,
   });
 
-  // Handle color changes
   floatingColorPicker.addEventListener("input", (e) => {
     if (!selectedMesh) return;
     const color = e.target.value;
-    console.log("Selected color:", color);
-
-    // Enable vertex colors if not already enabled
-    // Force material to MeshBasicMaterial to show exact color without lighting
-    selectedMesh.material = new THREE.MeshBasicMaterial({
-      vertexColors: true,
-      side: THREE.DoubleSide,
-    });
-    selectedMesh.material.needsUpdate = true;
-
-    // Apply color gradient across vertices
-    const geometry = selectedMesh.geometry;
-    if (geometry.isBufferGeometry) {
-      const position = geometry.attributes.position;
-
-      // Create color attribute if it doesn't exist
+    
+    // Instead of replacing material, just update the color
+    selectedMesh.material.color.set(color);
+    
+    // If you want to keep vertex coloring but maintain material properties:
+    if (selectedMesh.geometry.isBufferGeometry) {
+      const geometry = selectedMesh.geometry;
       if (!geometry.attributes.color) {
         geometry.setAttribute(
           "color",
-          new THREE.BufferAttribute(new Float32Array(position.count * 3), 3)
+          new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.count * 3), 3)
         );
       }
-
-      // Set colors for all vertices exactly with selected color (no brightness variation)
+      
       const colors = geometry.attributes.color.array;
       const baseColor = new THREE.Color(color);
-      for (let i = 0; i < position.count; i++) {
+      for (let i = 0; i < geometry.attributes.position.count; i++) {
         colors[i * 3] = baseColor.r;
         colors[i * 3 + 1] = baseColor.g;
         colors[i * 3 + 2] = baseColor.b;
       }
-      geometry.attributes.color.needsUpdate = true; // Flag for update
-      geometry.attributes.color.needsUpdate = true; // Flag for update
+      geometry.attributes.color.needsUpdate = true;
+      
+      // Enable vertex colors while keeping original material
+      selectedMesh.material.vertexColors = true;
     }
-
-    console.log(`Changed color of ${selectedMesh.name} to ${color}`);
   });
 
-  // Clean up when picker loses focus
   floatingColorPicker.addEventListener("blur", () => {
     removeFloatingColorPicker();
     selectedMesh = null;
   });
 
   document.body.appendChild(floatingColorPicker);
-  floatingColorPicker.focus(); // Focus so it works immediately
+  floatingColorPicker.focus();
 }
 
 /**
